@@ -41,6 +41,11 @@ jobs:
           echo "Testing Databricks Connection..."
           databricks workspace ls /
 
+      - name: Check Databricks CLI Version
+        run: |
+          databricks version
+      
+
       - name: Create Workspace Folder
         run: |
           databricks workspace mkdirs /Shared/CICD
