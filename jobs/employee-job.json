@@ -1,1 +1,12 @@
-
+{
+  "name": "Employee_ETL_Job",
+  "tasks": [
+    {
+      "task_key": "LoadEmployee",
+      "notebook_task": {
+        "notebook_path": "/Shared/CICD/NB_LoadEmployee"
+      },
+      "existing_cluster_id": "0627-082836-2y6gyhej"
+    }
+  ]
+}
