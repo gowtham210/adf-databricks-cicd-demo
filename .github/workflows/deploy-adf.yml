@@ -1,0 +1,30 @@
+name: Deploy ADF DEV
+
+on:
+  push:
+    branches:
+      - adf_publish
+
+jobs:
+  deploy-adf:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Verify Azure Login
+        run: az account show
+
+      - name: Deploy ARM Template
+        uses: azure/arm-deploy@v2
+        with:
+          resourceGroupName: rg-demo-dev
+          template: adfdemocicddev01/ARMTemplateForFactory.json
+          parameters: adfdemocicddev01/ARMTemplateParametersForFactory.json
