@@ -7,12 +7,11 @@ on:
 
 jobs:
   deploy-prod:
-
     runs-on: ubuntu-latest
 
     steps:
 
-      # Checkout Repository
+      # Checkout repository
       - name: Checkout Repository
         uses: actions/checkout@v4
 
@@ -27,7 +26,7 @@ jobs:
         run: |
           az account show
 
-      # Install Python
+      # Setup Python
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
@@ -39,16 +38,24 @@ jobs:
           python -m pip install --upgrade pip
           pip install databricks-cli
 
-      # Configure Databricks Authentication
+      # Configure Databricks CLI
       - name: Configure Databricks CLI
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST_PROD }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN_PROD }}
         run: |
+          mkdir -p ~/.databricks
+
+          cat > ~/.databrickscfg <<EOF
+          [DEFAULT]
+          host=$DATABRICKS_HOST
+          token=$DATABRICKS_TOKEN
+          EOF
+
           echo "Testing Databricks Connection..."
           databricks workspace ls /
 
-      # Display Repository Structure
+      # Verify repository structure
       - name: Verify Repository Files
         run: |
           pwd
