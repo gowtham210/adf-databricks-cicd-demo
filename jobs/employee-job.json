@@ -6,7 +6,17 @@
       "notebook_task": {
         "notebook_path": "/Shared/CICD/NB_LoadEmployee"
       },
-      "existing_cluster_id": "0627-082836-2y6gyhej"
+      "job_cluster_key": "employee_cluster"
+    }
+  ],
+  "job_clusters": [
+    {
+      "job_cluster_key": "employee_cluster",
+      "new_cluster": {
+        "spark_version": "16.4.x-scala2.12",
+        "node_type_id": "Standard_DS3_v2",
+        "num_workers": 1
+      }
     }
   ]
 }
