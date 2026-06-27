@@ -39,11 +39,7 @@ jobs:
       - name: Configure Databricks CLI
         run: |
           echo "Testing Databricks Connection..."
-          databricks workspace ls /
-
-      - name: Check Databricks CLI Version
-        run: |
-          databricks version
+          databricks workspace ls 
       
 
       - name: Create Workspace Folder
