@@ -59,3 +59,12 @@ jobs:
         run: |
           echo "Notebook deployed successfully."
           databricks workspace ls /Shared/CICD
+
+      - name: Check Existing Databricks Jobs
+        run: |
+          echo "Checking existing Databricks Jobs..."
+
+          curl --request GET \
+            "$DATABRICKS_HOST/api/2.1/jobs/list" \
+            --header "Authorization: Bearer $DATABRICKS_TOKEN" \
+            --header "Content-Type: application/json"orkspace ls /Shared/CICD
