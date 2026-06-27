@@ -9,54 +9,52 @@ jobs:
   deploy-prod:
     runs-on: ubuntu-latest
 
+    env:
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST_PROD }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN_PROD }}
+
     steps:
 
-      # Checkout repository
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # Azure Login
       - name: Azure Login
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      # Verify Azure Login
       - name: Verify Azure Login
-        run: |
-          az account show
+        run: az account show
 
-      # Setup Python
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: '3.11'
 
-      # Install Databricks CLI
       - name: Install Databricks CLI
         run: |
           python -m pip install --upgrade pip
           pip install databricks-cli
 
-      # Configure Databricks CLI
       - name: Configure Databricks CLI
-        env:
-          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST_PROD }}
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN_PROD }}
         run: |
-          mkdir -p ~/.databricks
-
-          cat > ~/.databrickscfg <<EOF
-          [DEFAULT]
-          host=$DATABRICKS_HOST
-          token=$DATABRICKS_TOKEN
-          EOF
-
           echo "Testing Databricks Connection..."
           databricks workspace ls /
 
-      # Verify repository structure
-      - name: Verify Repository Files
+      - name: Create Workspace Folder
         run: |
-          pwd
-          ls -R
+          databricks workspace mkdirs /Shared/CICD
+
+      - name: Deploy Notebook to PROD
+        run: |
+          databricks workspace import \
+            databricks/NB_LoadEmployee.ipynb \
+            /Shared/CICD/NB_LoadEmployee \
+            --format SOURCE \
+            --language PYTHON \
+            --overwrite
+
+      - name: Verify Deployment
+        run: |
+          echo "Notebook deployed successfully."
+          databricks workspace ls /Shared/CICD
