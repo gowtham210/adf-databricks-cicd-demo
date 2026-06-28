@@ -95,3 +95,11 @@ jobs:
               -H "Content-Type: application/json" \
               --data @reset.json
           fi
+      - name: Verify Job
+        run: |
+          echo "Listing Databricks Jobs..."
+
+          curl -X GET \
+            "${DATABRICKS_HOST}/api/2.1/jobs/list" \
+            -H "Authorization: Bearer ${DATABRICKS_TOKEN}" \
+            -H "Content-Type: application/json"
