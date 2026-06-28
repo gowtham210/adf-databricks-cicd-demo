@@ -50,10 +50,8 @@ jobs:
           databricks workspace import \
             databricks/NB_LoadEmployee.ipynb \
             /Shared/CICD/NB_LoadEmployee \
-            --format SOURCE \
-            --language PYTHON \
+            --format JUPYTER \
             --overwrite
-
       - name: Verify Deployment
         run: |
           echo "Notebook deployed successfully."
