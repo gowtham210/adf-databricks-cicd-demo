@@ -60,7 +60,7 @@ jobs:
           echo "Notebook deployed successfully."
           databricks workspace ls /Shared/CICD
 
-      - name: Create or Update Databricks Job
+            - name: Create or Update Databricks Job
         run: |
           echo "Checking if Employee_ETL_Job exists..."
 
@@ -95,4 +95,3 @@ jobs:
               -H "Content-Type: application/json" \
               --data @reset.json
           fi
-     
