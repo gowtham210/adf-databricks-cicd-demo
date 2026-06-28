@@ -9,6 +9,10 @@ jobs:
   deploy-dev:
     runs-on: ubuntu-latest
 
+    env:
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST_DEV }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN_DEV }}
+
     steps:
 
       - name: Checkout Repository
@@ -22,3 +26,57 @@ jobs:
       - name: Verify Azure Login
         run: |
           az account show
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Databricks CLI
+        run: |
+          python -m pip install --upgrade pip
+          pip install databricks-cli
+
+      - name: Configure Databricks CLI
+        run: |
+          echo "Testing Databricks Connection..."
+          databricks workspace ls /
+
+      - name: Create Workspace Folder
+        run: |
+          databricks workspace mkdirs /Shared/CICD
+
+      - name: Deploy Notebook to DEV
+        run: |
+          databricks workspace import \
+            databricks/NB_LoadEmployee.ipynb \
+            /Shared/CICD/NB_LoadEmployee \
+            --format JUPYTER \
+            --overwrite
+
+      - name: Verify Deployment
+        run: |
+          echo "Notebook deployed successfully."
+          databricks workspace ls /Shared/CICD
+
+      - name: Check Existing Databricks Jobs
+        run: |
+          curl -X GET \
+            "${DATABRICKS_HOST}/api/2.1/jobs/list" \
+            -H "Authorization: Bearer ${DATABRICKS_TOKEN}" \
+            -H "Content-Type: application/json"
+
+      - name: Create Databricks Job
+        run: |
+          curl -X POST \
+            "${DATABRICKS_HOST}/api/2.1/jobs/create" \
+            -H "Authorization: Bearer ${DATABRICKS_TOKEN}" \
+            -H "Content-Type: application/json" \
+            --data @jobs/employee-job.json
+
+      - name: Verify Job Creation
+        run: |
+          curl -X GET \
+            "${DATABRICKS_HOST}/api/2.1/jobs/list" \
+            -H "Authorization: Bearer ${DATABRICKS_TOKEN}" \
+            -H "Content-Type: application/json"
