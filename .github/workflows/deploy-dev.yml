@@ -89,25 +89,25 @@ jobs:
             echo "Updating Job $JOB_ID"
 
             cat > reset.json <<EOF
-{
-  "job_id": $JOB_ID,
-  "new_settings":
-EOF
-
-            cat jobs/employee-job.json >> reset.json
-
-            echo "}" >> reset.json
-
-            curl -X POST \
-              "${DATABRICKS_HOST}/api/2.1/jobs/reset" \
-              -H "Authorization: Bearer ${DATABRICKS_TOKEN}" \
-              -H "Content-Type: application/json" \
-              --data @reset.json
-          fi
-
-      - name: Verify Job
-        run: |
-          curl -X GET \
-            "${DATABRICKS_HOST}/api/2.1/jobs/list" \
-            -H "Authorization: Bearer ${DATABRICKS_TOKEN}" \
-            -H "Content-Type: application/json"
+          {
+            "job_id": $JOB_ID,
+            "new_settings":
+          EOF
+    
+                cat jobs/employee-job.json >> reset.json
+    
+                echo "}" >> reset.json
+    
+                curl -X POST \
+                  "${DATABRICKS_HOST}/api/2.1/jobs/reset" \
+                  -H "Authorization: Bearer ${DATABRICKS_TOKEN}" \
+                  -H "Content-Type: application/json" \
+                  --data @reset.json
+              fi
+    
+          - name: Verify Job
+            run: |
+              curl -X GET \
+                "${DATABRICKS_HOST}/api/2.1/jobs/list" \
+                -H "Authorization: Bearer ${DATABRICKS_TOKEN}" \
+                -H "Content-Type: application/json"
