@@ -1,0 +1,38 @@
+name: Deploy ADF PROD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy-adf-prod:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout adf_publish Branch
+        uses: actions/checkout@v4
+        with:
+          ref: adf_publish
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy ARM Template
+        uses: Azure/arm-deploy@v2
+        with:
+          subscriptionId: ${{ fromJson(secrets.AZURE_CREDENTIALS).subscriptionId }}
+          resourceGroupName: ${{ secrets.AZURE_RESOURCE_GROUP_PROD }}
+          template: ./adfdemocicddev01/ARMTemplateForFactory.json
+          parameters: ./adfdemocicddev01/ARMTemplateParametersForFactory.json \
+            factoryName=${{ secrets.ADF_NAME_PROD }}
+          deploymentMode: Incremental
+
+      - name: Verify Deployment
+        run: |
+          az datafactory show \
+            --name ${{ secrets.ADF_NAME_PROD }} \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP_PROD }}
