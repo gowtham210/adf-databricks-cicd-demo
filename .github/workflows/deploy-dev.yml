@@ -68,13 +68,13 @@ jobs:
             -H "Authorization: Bearer ${DATABRICKS_TOKEN}" \
             "${DATABRICKS_HOST}/api/2.1/jobs/list" | \
             python3 -c "
-import sys,json
-jobs=json.load(sys.stdin).get('jobs',[])
-for job in jobs:
-    if job['settings']['name']=='Employee_ETL_Job':
-        print(job['job_id'])
-        break
-")
+            import sys,json
+            jobs=json.load(sys.stdin).get('jobs',[])
+            for job in jobs:
+              if job['settings']['name']=='Employee_ETL_Job':
+              print(job['job_id'])
+            break
+            ")
 
           if [ -z "$JOB_ID" ]; then
             echo "Creating Job..."
