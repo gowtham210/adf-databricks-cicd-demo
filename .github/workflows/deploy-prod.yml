@@ -72,15 +72,6 @@ jobs:
             -H "Authorization: Bearer ${DATABRICKS_TOKEN}" \
             -H "Content-Type: application/json"
 
-      - name: Create Databricks Job
-        run: |
-          echo "Creating Databricks Job..."
-
-          curl -X POST \
-            "${DATABRICKS_HOST}/api/2.1/jobs/create" \
-            -H "Authorization: Bearer ${DATABRICKS_TOKEN}" \
-            -H "Content-Type: application/json" \
-            --data @jobs/employee-job.json
 
       - name: Verify Job Creation
         run: |
