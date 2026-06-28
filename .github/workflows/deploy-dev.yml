@@ -49,26 +49,63 @@ jobs:
       - name: Deploy Notebook to DEV
         run: |
           databricks workspace import \
-          databricks/NB_LoadEmployee.ipynb \
-          /Shared/CICD/NB_LoadEmployee \
-          --format JUPYTER \
-          --language PYTHON \
-          --overwrite
+            databricks/NB_LoadEmployee.ipynb \
+            /Shared/CICD/NB_LoadEmployee \
+            --format JUPYTER \
+            --language PYTHON \
+            --overwrite
 
       - name: Verify Deployment
         run: |
           echo "Notebook deployed successfully."
           databricks workspace ls /Shared/CICD
 
-      - name: Check Existing Databricks Jobs
+      - name: Create or Update Databricks Job
         run: |
-          curl -X GET \
-            "${DATABRICKS_HOST}/api/2.1/jobs/list" \
+          echo "Checking if Employee_ETL_Job exists..."
+
+          JOB_ID=$(curl -s \
             -H "Authorization: Bearer ${DATABRICKS_TOKEN}" \
-            -H "Content-Type: application/json"
+            "${DATABRICKS_HOST}/api/2.1/jobs/list" | \
+            python3 -c "
+import sys,json
+jobs=json.load(sys.stdin).get('jobs',[])
+for job in jobs:
+    if job['settings']['name']=='Employee_ETL_Job':
+        print(job['job_id'])
+        break
+")
 
+          if [ -z "$JOB_ID" ]; then
+            echo "Creating Job..."
 
-      - name: Verify Job Creation
+            curl -X POST \
+              "${DATABRICKS_HOST}/api/2.1/jobs/create" \
+              -H "Authorization: Bearer ${DATABRICKS_TOKEN}" \
+              -H "Content-Type: application/json" \
+              --data @jobs/employee-job.json
+
+          else
+            echo "Updating Job $JOB_ID"
+
+            cat > reset.json <<EOF
+{
+  "job_id": $JOB_ID,
+  "new_settings":
+EOF
+
+            cat jobs/employee-job.json >> reset.json
+
+            echo "}" >> reset.json
+
+            curl -X POST \
+              "${DATABRICKS_HOST}/api/2.1/jobs/reset" \
+              -H "Authorization: Bearer ${DATABRICKS_TOKEN}" \
+              -H "Content-Type: application/json" \
+              --data @reset.json
+          fi
+
+      - name: Verify Job
         run: |
           curl -X GET \
             "${DATABRICKS_HOST}/api/2.1/jobs/list" \
