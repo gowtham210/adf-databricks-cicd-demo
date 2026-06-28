@@ -45,13 +45,14 @@ jobs:
         run: |
           databricks workspace mkdirs /Shared/CICD
 
-      - name: Deploy Notebook to PROD
+      - name: Deploy Notebook to DEV
         run: |
           databricks workspace import \
-            databricks/NB_LoadEmployee.ipynb \
-            /Shared/CICD/NB_LoadEmployee \
-            --format JUPYTER \
-            --overwrite
+          databricks/NB_LoadEmployee.ipynb \
+          /Shared/CICD/NB_LoadEmployee \
+          --format JUPYTER \
+          --language PYTHON \
+          --overwrite
 
       - name: Verify Deployment
         run: |
