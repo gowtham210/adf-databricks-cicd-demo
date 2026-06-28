@@ -27,8 +27,8 @@ jobs:
           subscriptionId: ${{ fromJson(secrets.AZURE_CREDENTIALS).subscriptionId }}
           resourceGroupName: ${{ secrets.AZURE_RESOURCE_GROUP_PROD }}
           template: ./adfdemocicddev01/ARMTemplateForFactory.json
-          parameters: ./adfdemocicddev01/ARMTemplateParametersForFactory.json \
-            factoryName=${{ secrets.ADF_NAME_PROD }}
+          parameters: ./adfdemocicddev01/ARMTemplateParametersForFactory.json
+                      factoryName=${{ secrets.ADF_NAME_PROD }}
           deploymentMode: Incremental
 
       - name: Verify Deployment
