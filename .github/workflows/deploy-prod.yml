@@ -24,7 +24,8 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Verify Azure Login
-        run: az account show
+        run: |
+          az account show
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -45,7 +46,7 @@ jobs:
         run: |
           databricks workspace mkdirs /Shared/CICD
 
-      - name: Deploy Notebook to DEV
+      - name: Deploy Notebook to PROD
         run: |
           databricks workspace import \
           databricks/NB_LoadEmployee.ipynb \
@@ -64,29 +65,44 @@ jobs:
           echo "Host:"
           echo "$DATABRICKS_HOST"
 
-      - name: Check Existing Databricks Jobs
+      - name: Create or Update Databricks Job
         run: |
-          echo "Checking existing Databricks Jobs..."
+          echo "Checking if Employee_ETL_Job exists..."
 
-          curl -X GET \
-            "${DATABRICKS_HOST}/api/2.1/jobs/list" \
+          JOB_ID=$(curl -s \
             -H "Authorization: Bearer ${DATABRICKS_TOKEN}" \
-            -H "Content-Type: application/json"
+            "${DATABRICKS_HOST}/api/2.1/jobs/list" | \
+            python3 -c "import sys,json; jobs=json.load(sys.stdin).get('jobs',[]); print(next((str(j['job_id']) for j in jobs if j['settings']['name']=='Employee_ETL_Job'),''))")
 
-      - name: Create Databricks Job
+          echo "Found Job ID: $JOB_ID"
+
+          if [ -z "$JOB_ID" ]; then
+            echo "Job not found. Creating..."
+
+            curl -X POST \
+              "${DATABRICKS_HOST}/api/2.1/jobs/create" \
+              -H "Authorization: Bearer ${DATABRICKS_TOKEN}" \
+              -H "Content-Type: application/json" \
+              --data @jobs/employee-job.json
+
+          else
+            echo "Job exists. Updating..."
+
+            printf '{"job_id": %s, "new_settings": ' "$JOB_ID" > reset.json
+            cat jobs/employee-job.json >> reset.json
+            echo "}" >> reset.json
+
+            cat reset.json
+
+            curl -X POST \
+              "${DATABRICKS_HOST}/api/2.1/jobs/reset" \
+              -H "Authorization: Bearer ${DATABRICKS_TOKEN}" \
+              -H "Content-Type: application/json" \
+              --data @reset.json
+          fi
+
+      - name: Verify Job
         run: |
-          echo "Creating Databricks Job..."
-
-          curl -X POST \
-            "${DATABRICKS_HOST}/api/2.1/jobs/create" \
-            -H "Authorization: Bearer ${DATABRICKS_TOKEN}" \
-            -H "Content-Type: application/json" \
-            --data @jobs/employee-job.json
-
-      - name: Verify Job Creation
-        run: |
-          echo "Listing Databricks Jobs..."
-
           curl -X GET \
             "${DATABRICKS_HOST}/api/2.1/jobs/list" \
             -H "Authorization: Bearer ${DATABRICKS_TOKEN}" \
