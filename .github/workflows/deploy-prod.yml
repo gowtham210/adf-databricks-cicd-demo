@@ -49,11 +49,11 @@ jobs:
       - name: Deploy Notebook to PROD
         run: |
           databricks workspace import \
-            databricks/NB_LoadEmployee.ipynb \
-            /Shared/CICD/NB_LoadEmployee \
-            --format JUPYTER \
-            --language PYTHON \
-            --overwrite
+          databricks/NB_LoadEmployee.ipynb \
+          /Shared/CICD/NB_LoadEmployee \
+          --format JUPYTER \
+          --language PYTHON \
+          --overwrite
 
       - name: Verify Deployment
         run: |
