@@ -2,7 +2,31 @@
   "name": "Employee_ETL_Job",
   "tasks": [
     {
+      "task_key": "CreateTables",
+      "notebook_task": {
+        "notebook_path": "/Shared/CICD/NB_CreateTables"
+      },
+      "job_cluster_key": "employee_cluster"
+    },
+    {
+      "task_key": "LoadMetadata",
+      "depends_on": [
+        {
+          "task_key": "CreateTables"
+        }
+      ],
+      "notebook_task": {
+        "notebook_path": "/Shared/CICD/NB_LoadMetadata"
+      },
+      "job_cluster_key": "employee_cluster"
+    },
+    {
       "task_key": "LoadEmployee",
+      "depends_on": [
+        {
+          "task_key": "LoadMetadata"
+        }
+      ],
       "notebook_task": {
         "notebook_path": "/Shared/CICD/NB_LoadEmployee"
       },
