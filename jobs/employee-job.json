@@ -10,11 +10,6 @@
     },
     {
       "task_key": "LoadEmployee",
-      "depends_on": [
-        {
-          "task_key": "LoadMetadata"
-        }
-      ],
       "notebook_task": {
         "notebook_path": "/Shared/CICD/NB_LoadEmployee"
       },
