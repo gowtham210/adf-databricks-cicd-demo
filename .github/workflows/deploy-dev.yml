@@ -63,14 +63,6 @@ jobs:
             --language PYTHON \
             --overwrite
 
-      - name: Deploy LoadMetadata Notebook
-        run: |
-          databricks workspace import \
-            databricks/NB_LoadMetadata.ipynb \
-            /Shared/CICD/NB_LoadMetadata \
-            --format JUPYTER \
-            --language PYTHON \
-            --overwrite
   
       - name: Verify Deployment
         run: |
