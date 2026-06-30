@@ -1,1 +1,36 @@
+resources:
 
+  jobs:
+
+    employee_job:
+
+      name: Employee_ETL_Job
+
+      tasks:
+
+        - task_key: CreateTables
+
+          notebook_task:
+            notebook_path: ./src/NB_CreateTables.ipynb
+
+          existing_cluster_id: ${var.cluster_id}
+
+        - task_key: LoadMetadata
+
+          depends_on:
+            - task_key: CreateTables
+
+          notebook_task:
+            notebook_path: ./src/NB_LoadMetadata.ipynb
+
+          existing_cluster_id: ${var.cluster_id}
+
+        - task_key: LoadEmployee
+
+          depends_on:
+            - task_key: LoadMetadata
+
+          notebook_task:
+            notebook_path: ./src/NB_LoadEmployee.ipynb
+
+          existing_cluster_id: ${var.cluster_id}
