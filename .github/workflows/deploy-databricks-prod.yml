@@ -1,0 +1,36 @@
+name: Deploy Databricks PROD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy-prod:
+    runs-on: ubuntu-latest
+
+    env:
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST_PROD }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN_PROD }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install Databricks CLI
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+
+      - name: Verify CLI
+        run: |
+          databricks version
+
+      - name: Validate Bundle
+        working-directory: databricks/bundles/employee
+        run: |
+          databricks bundle validate -t prod
+
+      - name: Deploy Bundle
+        working-directory: databricks/bundles/employee
+        run: |
+          databricks bundle deploy -t prod
