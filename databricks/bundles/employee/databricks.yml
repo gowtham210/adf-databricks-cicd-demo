@@ -1,0 +1,22 @@
+bundle:
+  name: employee
+
+include:
+  - resources/*.yml
+
+targets:
+
+  dev:
+    default: true
+    mode: development
+
+    workspace:
+      host: https://adb-7405612249712252.12.azuredatabricks.net
+
+  prod:
+    mode: production
+
+    workspace:
+      host: https://adb-7405617509006870.10.azuredatabricks.net
+
+      root_path: /Workspace/Users/gowthamlee6@gmail.com/.bundle/${bundle.name}/${bundle.target}

@@ -1,0 +1,36 @@
+resources:
+  jobs:
+    employee_job:
+
+      name: Employee_ETL_Job
+
+      permissions:
+        - level: CAN_MANAGE
+          user_name: gowthamlee6@gmail.com
+
+      job_clusters:
+        - job_cluster_key: employee_cluster
+          new_cluster:
+            spark_version: "16.4.x-scala2.12"
+            node_type_id: "Standard_DS3_v2"
+            num_workers: 1
+
+      tasks:
+        - task_key: CreateTables
+          notebook_task:
+            notebook_path: ../src/NB_CreateTables.ipynb
+          job_cluster_key: employee_cluster
+
+        - task_key: LoadMetadata
+          depends_on:
+            - task_key: CreateTables
+          notebook_task:
+            notebook_path: ../src/NB_LoadMetadata.ipynb
+          job_cluster_key: employee_cluster
+
+        - task_key: LoadEmployee
+          depends_on:
+            - task_key: LoadMetadata
+          notebook_task:
+            notebook_path: ../src/NB_LoadEmployee.ipynb
+          job_cluster_key: employee_cluster
