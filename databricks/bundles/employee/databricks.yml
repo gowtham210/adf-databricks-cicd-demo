@@ -7,12 +7,14 @@ include:
 targets:
 
   dev:
-    mode: development
     default: true
+    mode: development
+
     workspace:
-      host: ${var.workspace_host}
+      host: https://adb-7405612249712252.12.azuredatabricks.net/
 
   prod:
     mode: production
+
     workspace:
-      host: ${var.workspace_host}
+      host: https://adb-7405617509006870.10.azuredatabricks.net/
