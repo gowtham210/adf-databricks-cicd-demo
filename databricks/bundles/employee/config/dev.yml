@@ -1,1 +1,5 @@
+variables:
 
+  cluster_id: 0627-082836-2y6gyhej
+
+  workspace_host: https://adb-7405612249712252.12.azuredatabricks.net/
