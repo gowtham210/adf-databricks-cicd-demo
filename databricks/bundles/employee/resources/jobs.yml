@@ -13,7 +13,7 @@ resources:
           notebook_task:
             notebook_path: ./src/NB_CreateTables.ipynb
 
-          existing_cluster_id: ${var.cluster_id}
+          existing_cluster_id: employee_cluster
 
         - task_key: LoadMetadata
 
@@ -23,7 +23,7 @@ resources:
           notebook_task:
             notebook_path: ./src/NB_LoadMetadata.ipynb
 
-          existing_cluster_id: ${var.cluster_id}
+          existing_cluster_id: employee_cluster
 
         - task_key: LoadEmployee
 
@@ -33,4 +33,4 @@ resources:
           notebook_task:
             notebook_path: ./src/NB_LoadEmployee.ipynb
 
-          existing_cluster_id: ${var.cluster_id}
+          existing_cluster_id: employee_cluster
