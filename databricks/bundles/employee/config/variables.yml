@@ -1,7 +1,0 @@
-variables:
-
-  cluster_id:
-    description: Cluster ID
-
-  workspace_host:
-    description: Databricks Workspace URL
