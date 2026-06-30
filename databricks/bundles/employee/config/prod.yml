@@ -1,5 +1,0 @@
-variables:
-
-  cluster_id: YOUR_PROD_CLUSTER_ID
-
-  workspace_host: https://YOUR-PROD-WORKSPACE.azuredatabricks.net
